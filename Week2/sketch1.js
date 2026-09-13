@@ -1,6 +1,6 @@
 let x = 0;
 function setup(){
-    createCanvas(700,500);
+    createCanvas(1500,500);
     background(color('#f6f7d7'));
     frameRate(2);
 }
