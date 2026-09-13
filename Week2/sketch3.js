@@ -5,7 +5,7 @@ function setup(){
     frameRate(5);
 }
 function draw(){
-background(246, 247, 215, 30);
+background(246, 247, 215, 50);
 let buildX = mouseX + random(-50, 50);
 let buildheight = height - mouseY + random(-50, 50);
 let buildwidth = random(20, 80);
