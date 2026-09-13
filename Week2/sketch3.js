@@ -5,9 +5,10 @@ function setup(){
     frameRate(5);
 }
 function draw(){
-let buildheight = random(100, 450);
-
-rect(mouseX,height - buildheight,50,buildheight);
+background(246, 247, 215, 30);
+let buildX = mouseX + random(-50, 50);
+let buildheight = height - mouseY + random(-50, 50);
+let buildwidth = random(20, 80);
    let buildingColor = random([
     '#e8c07d',
     '#d9a273',
@@ -17,4 +18,15 @@ rect(mouseX,height - buildheight,50,buildheight);
 fill(buildingColor);
 stroke('#9e927d');
 strokeWeight(1);
+rect(buildX,height - buildheight,buildwidth,buildheight);
+fill('#ffd460');
+noStroke();
+
+for (let y = height - buildheight + 20; y < height - 20; y += 30) 
+{rect(buildX + 10, y, 8, 12);
+if (buildwidth > 50) {
+rect(buildX + 30, y, 8, 12);}}
+
+if (random(1) > 0.7) {fill(buildingColor);
+  rect(buildX + buildwidth / 3,height - buildheight - 15,buildwidth / 3,15);}
 }
