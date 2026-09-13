@@ -5,7 +5,7 @@ function setup(){
     frameRate(10);
 }
 function draw(){
-background(45, 64, 89, 80);
+background(45, 64, 89, 60);
 let lightSize = random(5, 30);
    fill(random([
     '#ffaaa5',
