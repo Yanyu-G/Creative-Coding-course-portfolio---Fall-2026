@@ -19,7 +19,7 @@ background(0);
 lerpedMouseX = lerp(lerpedMouseX, mouseX, 0.05)
 lerpedMouseY = lerp(lerpedMouseY, mouseY, 0.05)
 r = lerpedMouseX / 5;
-
+//first arm
 push();
 translate(width/2, height/2);
 circle(0, 0, 20);
@@ -39,10 +39,73 @@ rotate(r);
 
 line(0, 0, 80, 0);
 rect(80, 0, 20, 20);
-
-
 pop();
+//second arm
+push();
+translate(width/2, height/2);
+rotate(180);
+circle(0, 0, 20);
+rotate(r);
 
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+pop();
+//third arm
+push();
+translate(width/2, height/2);
+rotate(90);
+circle(0, 0, 20);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+pop();
+//fourth arm
+push();
+translate(width/2, height/2);
+rotate(-90);
+circle(0, 0, 20);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+
+translate(80, 0);
+rotate(r);
+
+line(0, 0, 80, 0);
+rect(80, 0, 20, 20);
+pop();
 
 
 }
