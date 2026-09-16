@@ -24,6 +24,5 @@ if (mouseX > x && mouseX < x + 50) {
   for (let y = height - buildingHeight + 20; y < height - 20; y += 30) {
 if (random(1) > 0.6) {rect(x + 10, y, 8, 12);}
 if (random(1) > 0.6) {rect(x + 30, y, 8, 12);}}}
-
 }
 }
