@@ -8,13 +8,13 @@ function setup(){
     rectMode(CENTER)
     angleMode(DEGREES)
 
-    stroke(255)
+    stroke('#ffd166')
     strokeWeight(2)
     noFill()   
 }
 
 function draw(){
-background(0);
+background(color('#111827'));
 
 lerpedMouseX = lerp(lerpedMouseX, mouseX, 0.05)
 lerpedMouseY = lerp(lerpedMouseY, mouseY, 0.05)
