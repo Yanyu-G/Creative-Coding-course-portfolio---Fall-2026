@@ -5,7 +5,7 @@ function setup() {
     stroke('#ffd166');
     strokeWeight(2);
     noFill();
-     frameRate(6);
+    frameRate(6);
 }
 
 function draw() {
