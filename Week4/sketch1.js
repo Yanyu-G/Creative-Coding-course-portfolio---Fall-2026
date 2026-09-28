@@ -7,6 +7,9 @@ let middleWidths = [];
 let frontHeights = [];
 let frontWidths = [];
 
+p5.disableFriendlyErrors = true;
+let bDoExportSvg = false;
+
 function setup() {
 
   createCanvas(576, 384);
@@ -39,6 +42,10 @@ function setup() {
 
 
 function draw() {
+
+  if (bDoExportSvg) {
+    beginRecordSvg("week4_city.svg");
+  }
 
   background(255);
 
@@ -112,21 +119,17 @@ function drawBuilding(buildingHeight, buildingWidth, patternType) {
     }
   }
 
-  else if (patternType == 2) {
-    for (let xLine = -buildingWidth / 2 + 10;
-      xLine < buildingWidth / 2;
-      xLine += 10
-    ) {
-    for (let y = -buildingHeight + 15;
-        y < 0;
-        y += 15
-      ) {
-    line(xLine,y,xLine + 7,y - 7);
+else if (patternType == 2) {
+    for (let xLine = -buildingWidth / 2 + 10; xLine < buildingWidth / 2; xLine += 10) {
+      for (let y = -buildingHeight + 15; y < 0; y += 15) {
+        line(xLine, y, xLine + 7, y - 7);
       }
-
     }
-
   }
-
 }
 
+function keyPressed() {
+  if (key == 's' || key == 'S') {
+    bDoExportSvg = true;
+  }
+}
