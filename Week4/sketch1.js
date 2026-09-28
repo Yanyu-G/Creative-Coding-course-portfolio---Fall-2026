@@ -1,139 +1,97 @@
-let backHeights = [];
-let backWidths = [];
-
-let middleHeights = [];
-let middleWidths = [];
-
-let frontHeights = [];
-let frontWidths = [];
-
-p5.disableFriendlyErrors = true;
+// Draw only visible strokes so the canvas and pen-plotter SVG agree.
+const cityLayers = [];
 let bDoExportSvg = false;
 
 function setup() {
-
   createCanvas(576, 384);
-
   noFill();
   stroke(0);
   strokeWeight(1);
-
-  rectMode(CENTER);
-
-  for (let i = 0; i < 7; i++) {
-    backHeights[i] = random(150, 250);
-    backWidths[i] = random(35, 65);
-  }
-
-
-
-  for (let i = 0; i < 6; i++) {
-    middleHeights[i] = random(110, 190);
-    middleWidths[i] = random(45, 75);
-  }
-
-
-  for (let i = 0; i < 5; i++) {
-    frontHeights[i] = random(70, 140);
-    frontWidths[i] = random(55, 90);
-  }
+  const specs = [
+    { count: 7, start: 55, step: 75, base: 300, depth: 0.3, heights: [150, 250], widths: [35, 65] },
+    { count: 6, start: 70, step: 85, base: 320, depth: 0.6, heights: [110, 190], widths: [45, 75] },
+    { count: 5, start: 85, step: 100, base: 340, depth: 1, heights: [70, 140], widths: [55, 90] }
+  ];
+  specs.forEach((spec, layer) => {
+    for (let i = 0; i < spec.count; i++) {
+      cityLayers.push({ x: spec.start + i * spec.step, base: spec.base,
+        depth: spec.depth, h: random(...spec.heights), w: random(...spec.widths),
+        pattern: (i + layer) % 3 });
+    }
+  });
 }
-
-
 
 function draw() {
-
-  if (bDoExportSvg) {
-    beginRecordSvg("week4_city.svg");
-  }
-
   background(255);
-
-  let moveX = map(mouseX, 0, width, -20, 20);
-  let moveY = map(mouseY, 0, height, -10, 10);
-
-
-
-  let backI = 0;
-  for (let x = 55; x < width - 30; x += 75) {
-
-    push();
-    translate(x + moveX * 0.3,300 + moveY * 0.3);
-    let buildingHeight = backHeights[backI];
-    let buildingWidth = backWidths[backI];
-    let patternType = backI % 3;
-    drawBuilding(buildingHeight,buildingWidth,patternType);
-    pop();
-
-    backI++;
+  const moveX = map(constrain(mouseX, 0, width), 0, width, -20, 20);
+  const moveY = map(constrain(mouseY, 0, height), 0, height, -10, 10);
+  const buildings = cityLayers.map(b => {
+    const x = b.x + moveX * b.depth;
+    const bottom = b.base + moveY * b.depth;
+    return { left: x - b.w / 2, right: x + b.w / 2,
+      top: bottom - b.h, bottom, pattern: b.pattern };
+  });
+  if (bDoExportSvg) beginRecordSvg("week4_city.svg");
+  buildings.forEach((b, i) => {
+    const occluders = buildings.slice(i + 1);
+    buildingLines(b).forEach(segment => {
+      let visible = [segment];
+      occluders.forEach(box => {
+        visible = visible.flatMap(part => subtractBox(part, box));
+      });
+      visible.forEach(part => line(...part));
+    });
+  });
+  // End recording only after every layer has been drawn.
+  if (bDoExportSvg) {
+    endRecordSvg();
+    bDoExportSvg = false;
   }
-
-
-  let middleI = 0;
-  for (let x = 70; x < width - 40; x += 85) {
-    push();
-    translate(x + moveX * 0.6,320 + moveY * 0.6);
-    let buildingHeight = middleHeights[middleI];
-    let buildingWidth = middleWidths[middleI];
-    let patternType = (middleI + 1) % 3;
-    drawBuilding(buildingHeight,buildingWidth,patternType);
-    pop();
-
-    middleI++;
-  }
-
-
-  let frontI = 0;
-  for (let x = 85; x < width - 50; x += 100) {
-    push();translate(x + moveX,340 + moveY);
-    let buildingHeight = frontHeights[frontI];
-    let buildingWidth = frontWidths[frontI];
-    let patternType = (frontI + 2) % 3;
-    drawBuilding(buildingHeight,buildingWidth,patternType);
-    pop();
-
-    frontI++;
-  }
-
 }
 
-
-function drawBuilding(buildingHeight, buildingWidth, patternType) {
-  rect(0,-buildingHeight / 2,buildingWidth,buildingHeight);
-
-  if (patternType == 0) {
-    for (let y = -buildingHeight + 10;
-      y < 0;
-      y += 10
-    ) 
-    {line(-buildingWidth / 2, y,buildingWidth / 2,y);}
-
-  }
-
-  else if (patternType == 1) {
-    for (
-      let xLine = -buildingWidth / 2 + 10;
-      xLine < buildingWidth / 2;
-      xLine += 10) {
-      line(xLine,-buildingHeight,xLine,0);
-    }
-  }
-
-else if (patternType == 2) {
-    for (let xLine = -buildingWidth / 2 + 10; xLine < buildingWidth / 2; xLine += 10) {
-      for (let y = -buildingHeight + 15; y < 0; y += 15) {
-        line(xLine, y, xLine + 7, y - 7);
+function buildingLines(b) {
+  const { left: l, right: r, top: t, bottom: d } = b;
+  const segments = [[l,t,r,t], [r,t,r,d], [r,d,l,d], [l,d,l,t]];
+  if (b.pattern === 0) {
+    for (let y = t + 10; y < d; y += 10) segments.push([l,y,r,y]);
+  } else if (b.pattern === 1) {
+    for (let x = l + 10; x < r; x += 10) segments.push([x,t,x,d]);
+  } else {
+    for (let x = l + 10; x < r; x += 10) {
+      for (let y = t + 15; y < d; y += 15) {
+        const length = Math.min(7, r - x, y - t);
+        segments.push([x,y,x + length,y - length]);
       }
     }
   }
-  if (bDoExportSvg) {
-  endRecordSvg();
-  bDoExportSvg = false;
+  return segments;
 }
+
+// Subtract a foreground rectangle from a line, retaining up to two pieces.
+// Real geometry removal also works in SVG exporters that ignore fills/masks.
+function subtractBox(segment, box) {
+  const [x1,y1,x2,y2] = segment;
+  const dx = x2 - x1, dy = y2 - y1;
+  let enter = 0, leave = 1;
+  for (const [origin, delta, min, max] of [
+    [x1,dx,box.left,box.right], [y1,dy,box.top,box.bottom]
+  ]) {
+    if (Math.abs(delta) < 1e-10) {
+      if (origin <= min || origin >= max) return [segment];
+    } else {
+      const a = (min - origin) / delta, b = (max - origin) / delta;
+      enter = Math.max(enter, Math.min(a,b));
+      leave = Math.min(leave, Math.max(a,b));
+      if (enter >= leave) return [segment];
+    }
+  }
+  const point = t => [x1 + t * dx, y1 + t * dy];
+  const parts = [];
+  if (enter > 1e-10) parts.push([x1,y1,...point(enter)]);
+  if (leave < 1 - 1e-10) parts.push([...point(leave),x2,y2]);
+  return parts;
 }
 
 function keyPressed() {
-  if (key == 's' || key == 'S') {
-    bDoExportSvg = true;
-  }
+  if (key === 's' || key === 'S') bDoExportSvg = true;
 }
