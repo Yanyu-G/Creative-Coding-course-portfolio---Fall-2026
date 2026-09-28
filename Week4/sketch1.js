@@ -126,6 +126,10 @@ else if (patternType == 2) {
       }
     }
   }
+  if (bDoExportSvg) {
+  endRecordSvg();
+  bDoExportSvg = false;
+}
 }
 
 function keyPressed() {
