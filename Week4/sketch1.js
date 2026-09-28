@@ -129,3 +129,4 @@ function drawBuilding(buildingHeight, buildingWidth, patternType) {
   }
 
 }
+
