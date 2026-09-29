@@ -1,4 +1,4 @@
-// Draw only visible strokes so the canvas and pen-plotter SVG agree.
+
 const cityLayers = [];
 let bDoExportSvg = false;
 
@@ -42,7 +42,6 @@ function draw() {
       visible.forEach(part => line(...part));
     });
   });
-  // End recording only after every layer has been drawn.
   if (bDoExportSvg) {
     endRecordSvg();
     bDoExportSvg = false;
@@ -67,8 +66,6 @@ function buildingLines(b) {
   return segments;
 }
 
-// Subtract a foreground rectangle from a line, retaining up to two pieces.
-// Real geometry removal also works in SVG exporters that ignore fills/masks.
 function subtractBox(segment, box) {
   const [x1,y1,x2,y2] = segment;
   const dx = x2 - x1, dy = y2 - y1;
