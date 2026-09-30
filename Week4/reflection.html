@@ -91,26 +91,27 @@ I recorded this as one of the main issues I encountered during the printing proc
 <h2>Problems and Observations</h2>
 
 <p>
-One challenge was keeping the paper and drawing position unchanged when switching pens.
-If the paper moved, the different color layers would no longer align correctly.
-I also noticed that areas with many overlapping lines took much longer to draw
-and sometimes became visually heavier than they appeared on the screen.
+One challenge was keeping the paper in exactly the same position when switching pens.
+For the multi-color print, each group needed to align with the previous one.
+Even a small movement of the paper could cause the different color layers to shift.
 </p>
 
 <p>
-Another difference between the digital sketch and the physical print was the quality of the line.
-The digital version has perfectly consistent lines, while the pen plotter produces small variations
-depending on the pen, paper, pressure, and repeated movement.
-I think these small differences made the physical result more interesting.
+I also noticed that areas with many overlapping paths took much longer to plot.
+Some parts of the physical drawing became visually heavier than they appeared on the screen.
+This made me think more carefully about line density when designing for a pen plotter.
 </p>
 
 
 <h2>Reflection</h2>
 
 <p>
-This experiment helped me understand the difference between generating an image on screen
-and translating the same system into a physical drawing.
-At first, I treated the SVG as one finished image.
-After experimenting with Inkscape, I realized that the paths could also become separate physical layers.
-Changing pens between groups introduced another level of variation that did not exist in the original code.
+This experiment helped me understand that a generative drawing changes when it moves from the screen to a physical process.
+The p5.js sketch created the original system, but exporting the SVG and working in Inkscape gave me another level of control over the paths.
+</p>
+
+<p>
+The two printing experiments also produced different results.
+The single-color print emphasized the overall pattern, while the multi-color version made the separate groups of paths more visible.
+Changing pens, reorganizing layers, and dealing with small plotting errors became part of the final outcome rather than just technical steps.
 </p>
