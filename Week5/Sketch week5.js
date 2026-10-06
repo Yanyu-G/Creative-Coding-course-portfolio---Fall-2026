@@ -1,229 +1,781 @@
+p5.disableFriendlyErrors = true;
+
+let bDoExportSvg = false;
+
 let seed = 12;
-let margin = 42;
+let margin = 45;
+
 
 function setup() {
-  createCanvas(576, 576);   // 正方形画布
-  noLoop();
-  rectMode(CORNER);
+
+  createCanvas(576, 576);
+
+  noFill();
   stroke(0);
   strokeWeight(1);
-  noFill();
+
 }
 
+
 function draw() {
+
+  // ------------------------------
+  // START SVG RECORDING
+  // ------------------------------
+  if (bDoExportSvg) {
+
+    beginRecordSvg("dense_urban_field.svg");
+
+  }
+
+
   background(255);
 
   randomSeed(seed);
 
   let cityX = margin;
   let cityY = margin;
+
   let cityW = width - margin * 2;
   let cityH = height - margin * 2;
 
-  // 外框
-  rect(cityX, cityY, cityW, cityH);
-  rect(cityX - 6, cityY - 6, cityW + 12, cityH + 12);
 
-  // 用 mouseX 控制街道宽度
-  // 用 mouseY 控制建筑内部线条密度
-  subdivideDistrict(cityX + 8, cityY + 8, cityW - 16, cityH - 16, 0);
+  // 外部边框
+  rect(cityX, cityY, cityW, cityH);
+
+
+  // 城市主体
+  subdivideDistrict(
+    cityX + 8,
+    cityY + 8,
+    cityW - 16,
+    cityH - 16,
+    0
+  );
+
+
+  // ------------------------------
+  // END SVG RECORDING
+  // ------------------------------
+  if (bDoExportSvg) {
+
+    endRecordSvg();
+
+    bDoExportSvg = false;
+
+  }
+
 }
 
-// 递归切分大街区
-function subdivideDistrict(x, y, w, h, depth) {
-  let minSize = 82;
-  let maxDepth = 4;
-  let street = map(mouseX, 0, width, 6, 14);
 
-  if (depth >= maxDepth || w < minSize || h < minSize) {
-    fillBlockWithBuildings(x, y, w, h);
+
+function subdivideDistrict(x, y, w, h, depth) {
+
+  let minSize = 85;
+
+  let maxDepth = 4;
+
+
+  // mouseX 控制街道宽度
+  let street = map(
+    mouseX,
+    0,
+    width,
+    5,
+    14
+  );
+
+
+  // 如果区域太小
+  // 就停止切割，开始生成建筑
+
+  if (
+    depth >= maxDepth ||
+    w < minSize ||
+    h < minSize
+  ) {
+
+    fillBlockWithBuildings(
+      x,
+      y,
+      w,
+      h
+    );
+
     return;
+
   }
+
+
 
   let splitVertical;
 
-  if (w > h * 1.15) {
+
+  // 根据长宽比例决定切割方向
+
+  if (w > h * 1.2) {
+
     splitVertical = true;
-  } else if (h > w * 1.15) {
-    splitVertical = false;
-  } else {
-    splitVertical = random() < 0.5;
+
   }
+
+  else if (h > w * 1.2) {
+
+    splitVertical = false;
+
+  }
+
+  else {
+
+    splitVertical = random() < 0.5;
+
+  }
+
+
+
+  // ------------------------
+  // VERTICAL SPLIT
+  // ------------------------
 
   if (splitVertical) {
-    let split = random(0.35, 0.65) * w;
 
-    let w1 = split - street / 2;
-    let w2 = w - split - street / 2;
+    let split =
+      random(0.35, 0.65) * w;
 
-    if (w1 < 28 || w2 < 28) {
-      fillBlockWithBuildings(x, y, w, h);
+
+    let w1 =
+      split - street / 2;
+
+    let w2 =
+      w - split - street / 2;
+
+
+    if (
+      w1 < 30 ||
+      w2 < 30
+    ) {
+
+      fillBlockWithBuildings(
+        x,
+        y,
+        w,
+        h
+      );
+
       return;
+
     }
 
-    // 中间街道中心线
-    line(x + split, y, x + split, y + h);
 
-    subdivideDistrict(x, y, w1, h, depth + 1);
-    subdivideDistrict(x + split + street / 2, y, w2, h, depth + 1);
+    // 街道中心线
 
-  } else {
-    let split = random(0.35, 0.65) * h;
+    line(
+      x + split,
+      y,
+      x + split,
+      y + h
+    );
 
-    let h1 = split - street / 2;
-    let h2 = h - split - street / 2;
 
-    if (h1 < 28 || h2 < 28) {
-      fillBlockWithBuildings(x, y, w, h);
-      return;
-    }
+    subdivideDistrict(
 
-    // 中间街道中心线
-    line(x, y + split, x + w, y + split);
+      x,
+      y,
 
-    subdivideDistrict(x, y, w, h1, depth + 1);
-    subdivideDistrict(x, y + split + street / 2, w, h2, depth + 1);
+      w1,
+      h,
+
+      depth + 1
+
+    );
+
+
+    subdivideDistrict(
+
+      x + split + street / 2,
+      y,
+
+      w2,
+      h,
+
+      depth + 1
+
+    );
+
   }
+
+
+  // ------------------------
+  // HORIZONTAL SPLIT
+  // ------------------------
+
+  else {
+
+    let split =
+      random(0.35, 0.65) * h;
+
+
+    let h1 =
+      split - street / 2;
+
+    let h2 =
+      h - split - street / 2;
+
+
+    if (
+      h1 < 30 ||
+      h2 < 30
+    ) {
+
+      fillBlockWithBuildings(
+        x,
+        y,
+        w,
+        h
+      );
+
+      return;
+
+    }
+
+
+    line(
+      x,
+      y + split,
+      x + w,
+      y + split
+    );
+
+
+    subdivideDistrict(
+
+      x,
+      y,
+
+      w,
+      h1,
+
+      depth + 1
+
+    );
+
+
+    subdivideDistrict(
+
+      x,
+      y + split + street / 2,
+
+      w,
+      h2,
+
+      depth + 1
+
+    );
+
+  }
+
 }
 
-// 在每个街区里填入建筑
+
+
+
 function fillBlockWithBuildings(x, y, w, h) {
-  rect(x, y, w, h);
 
-  let inner = 4;
-  x += inner;
-  y += inner;
-  w -= inner * 2;
-  h -= inner * 2;
+  // 街区外框
 
-  if (w < 18 || h < 18) return;
+  rect(
+    x,
+    y,
+    w,
+    h
+  );
 
-  let cols = floor(random(2, 6));
-  let rows = floor(random(2, 6));
 
-  let gap = 3;
-  let cellW = w / cols;
-  let cellH = h / rows;
+  let padding = 5;
 
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
 
-      // 留出少量空地，让画面有呼吸感
-      if (random() < 0.10) continue;
+  x += padding;
+  y += padding;
 
-      let bx = x + i * cellW + gap;
-      let by = y + j * cellH + gap;
-      let bw = cellW - gap * 2;
-      let bh = cellH - gap * 2;
+  w -= padding * 2;
+  h -= padding * 2;
 
-      bw *= random(0.75, 1.0);
-      bh *= random(0.75, 1.0);
 
-      drawBuilding(bx, by, bw, bh);
+  if (
+    w < 20 ||
+    h < 20
+  ) {
+
+    return;
+
+  }
+
+
+
+  // 每个 block 内有很多小建筑
+
+  let cols =
+    floor(random(2, 6));
+
+  let rows =
+    floor(random(2, 6));
+
+
+  let cellW =
+    w / cols;
+
+  let cellH =
+    h / rows;
+
+
+  for (
+    let i = 0;
+    i < cols;
+    i++
+  ) {
+
+    for (
+      let j = 0;
+      j < rows;
+      j++
+    ) {
+
+
+      // 偶尔留下空地
+      if (random() < 0.08) {
+
+        continue;
+
+      }
+
+
+      let gap = 3;
+
+
+      let bx =
+        x +
+        i * cellW +
+        gap;
+
+      let by =
+        y +
+        j * cellH +
+        gap;
+
+
+      let bw =
+        cellW -
+        gap * 2;
+
+      let bh =
+        cellH -
+        gap * 2;
+
+
+      // 让建筑大小不是完全一样
+
+      bw *= random(
+        0.75,
+        1
+      );
+
+      bh *= random(
+        0.75,
+        1
+      );
+
+
+      drawBuilding(
+        bx,
+        by,
+        bw,
+        bh
+      );
+
     }
+
   }
+
 }
 
-// 单个建筑
+
+
+
 function drawBuilding(x, y, w, h) {
-  if (w < 8 || h < 8) return;
 
-  rect(x, y, w, h);
+  if (
+    w < 7 ||
+    h < 7
+  ) {
 
-  // 内轮廓线，让结构更复杂
-  if (w > 14 && h > 14 && random() < 0.75) {
-    rect(x + 2, y + 2, w - 4, h - 4);
+    return;
+
   }
 
-  if (w > 20 && h > 20 && random() < 0.35) {
-    rect(x + 4, y + 4, w - 8, h - 8);
+
+  // 建筑外轮廓
+
+  rect(
+    x,
+    y,
+    w,
+    h
+  );
+
+
+
+  // ------------------------
+  // INTERNAL RECTANGLES
+  // ------------------------
+
+  if (
+    w > 15 &&
+    h > 15
+  ) {
+
+    rect(
+      x + 2,
+      y + 2,
+      w - 4,
+      h - 4
+    );
+
   }
 
-  let density = floor(map(mouseY, 0, height, 3, 10));
-  let mode = floor(random(4));
 
-  if (mode === 0) {
-    hatchHorizontal(x, y, w, h, density);
-  } else if (mode === 1) {
-    hatchVertical(x, y, w, h, density);
-  } else if (mode === 2) {
-    hatchDiagonalA(x, y, w, h, density);
-  } else {
-    hatchDiagonalB(x, y, w, h, density);
+  if (
+    w > 24 &&
+    h > 24 &&
+    random() < 0.5
+  ) {
+
+    rect(
+      x + 5,
+      y + 5,
+      w - 10,
+      h - 10
+    );
+
   }
 
-  // 偶尔加一条中轴线，增加城市感
-  if (random() < 0.3) {
-    line(x + w / 2, y, x + w / 2, y + h);
+
+
+  // mouseY 控制内部线条数量
+
+  let density =
+    floor(
+      map(
+        mouseY,
+        0,
+        height,
+        3,
+        12
+      )
+    );
+
+
+  let pattern =
+    floor(random(4));
+
+
+  if (pattern == 0) {
+
+    hatchHorizontal(
+      x,
+      y,
+      w,
+      h,
+      density
+    );
+
   }
 
-  if (random() < 0.3) {
-    line(x, y + h / 2, x + w, y + h / 2);
+
+  else if (pattern == 1) {
+
+    hatchVertical(
+      x,
+      y,
+      w,
+      h,
+      density
+    );
+
   }
+
+
+  else if (pattern == 2) {
+
+    hatchDiagonalA(
+      x,
+      y,
+      w,
+      h,
+      density
+    );
+
+  }
+
+
+  else {
+
+    hatchDiagonalB(
+      x,
+      y,
+      w,
+      h,
+      density
+    );
+
+  }
+
+
+
+  // 有些建筑加入十字结构
+
+  if (random() < 0.35) {
+
+    line(
+      x + w / 2,
+      y,
+      x + w / 2,
+      y + h
+    );
+
+  }
+
+
+  if (random() < 0.35) {
+
+    line(
+      x,
+      y + h / 2,
+      x + w,
+      y + h / 2
+    );
+
+  }
+
 }
 
-// 横向纹理
-function hatchHorizontal(x, y, w, h, n) {
-  let step = max(3, h / n);
-  for (let yy = y + step; yy < y + h; yy += step) {
-    line(x, yy, x + w, yy);
+
+
+// =======================================
+// HORIZONTAL HATCH
+// =======================================
+
+function hatchHorizontal(
+  x,
+  y,
+  w,
+  h,
+  density
+) {
+
+  let spacing =
+    max(
+      3,
+      h / density
+    );
+
+
+  for (
+    let yy = y + spacing;
+    yy < y + h;
+    yy += spacing
+  ) {
+
+    line(
+      x,
+      yy,
+      x + w,
+      yy
+    );
+
   }
+
 }
 
-// 竖向纹理
-function hatchVertical(x, y, w, h, n) {
-  let step = max(3, w / n);
-  for (let xx = x + step; xx < x + w; xx += step) {
-    line(xx, y, xx, y + h);
+
+
+// =======================================
+// VERTICAL HATCH
+// =======================================
+
+function hatchVertical(
+  x,
+  y,
+  w,
+  h,
+  density
+) {
+
+  let spacing =
+    max(
+      3,
+      w / density
+    );
+
+
+  for (
+    let xx = x + spacing;
+    xx < x + w;
+    xx += spacing
+  ) {
+
+    line(
+      xx,
+      y,
+      xx,
+      y + h
+    );
+
   }
+
 }
 
-// 左上到右下斜线
-function hatchDiagonalA(x, y, w, h, n) {
-  let step = max(4, min(w, h) / n);
 
-  for (let i = -h; i < w; i += step) {
-    let x1 = x + max(i, 0);
-    let y1 = y + max(-i, 0);
-    let x2 = x + min(i + h, w);
-    let y2 = y + min(h + i, h);
-    line(x1, y1, x2, y2);
+
+// =======================================
+// DIAGONAL /
+// =======================================
+
+function hatchDiagonalA(
+  x,
+  y,
+  w,
+  h,
+  density
+) {
+
+  let spacing =
+    max(
+      4,
+      min(w, h) / density
+    );
+
+
+  for (
+    let i = -h;
+    i < w;
+    i += spacing
+  ) {
+
+
+    let x1 =
+      x + max(i, 0);
+
+    let y1 =
+      y + max(-i, 0);
+
+
+    let x2 =
+      x + min(i + h, w);
+
+    let y2 =
+      y + min(h + i, h);
+
+
+    line(
+      x1,
+      y1,
+      x2,
+      y2
+    );
+
   }
+
 }
 
-// 右上到左下斜线
-function hatchDiagonalB(x, y, w, h, n) {
-  let step = max(4, min(w, h) / n);
 
-  for (let i = 0; i < w + h; i += step) {
-    let x1 = x + max(i - h, 0);
-    let y1 = y + min(i, h);
-    let x2 = x + min(i, w);
-    let y2 = y + max(i - w, 0);
-    line(x1, y1, x2, y2);
+
+// =======================================
+// DIAGONAL \
+// =======================================
+
+function hatchDiagonalB(
+  x,
+  y,
+  w,
+  h,
+  density
+) {
+
+  let spacing =
+    max(
+      4,
+      min(w, h) / density
+    );
+
+
+  for (
+    let i = 0;
+    i < w + h;
+    i += spacing
+  ) {
+
+
+    let x1 =
+      x + max(i - h, 0);
+
+    let y1 =
+      y + min(i, h);
+
+
+    let x2 =
+      x + min(i, w);
+
+    let y2 =
+      y + max(i - w, 0);
+
+
+    line(
+      x1,
+      y1,
+      x2,
+      y2
+    );
+
   }
+
 }
 
-// 移动鼠标时刷新
-function mouseMoved() {
-  redraw();
-}
 
-// 点击鼠标换一个新版本
+
+// =======================================
+// INTERACTION
+// =======================================
+
 function mousePressed() {
+
   seed++;
-  redraw();
+
 }
 
-// 按 S 保存图片（先保存 png）
-// 如果你已经接了 svg 导出库，也可以再改成 svg 保存
+
 function keyPressed() {
-  if (key === 's' || key === 'S') {
-    saveCanvas('dense_urban_field', 'png');
+
+  // S = export SVG
+
+  if (
+    key == 's' ||
+    key == 'S'
+  ) {
+
+    bDoExportSvg = true;
+
   }
 
-  if (key === 'r' || key === 'R') {
+
+  // R = new random city
+
+  if (
+    key == 'r' ||
+    key == 'R'
+  ) {
+
     seed++;
-    redraw();
+
   }
+
 }
