@@ -1,9 +1,9 @@
 
 const soundNames = [
-  "Sound 1",
-  "Lucky-Lucky",
-  "Short Alert",
-  "Lullaby of Enchantment"
+  "Footsteps",
+  "Human Voice",
+  "Wind",
+  "Music"
 ];
 
 const soundPaths = [
@@ -12,6 +12,7 @@ const soundPaths = [
   "sound/sound3.mp3",
   "sound/sound4.mp3"
 ];
+
 
 let audioContext;
 let tracks = [];
