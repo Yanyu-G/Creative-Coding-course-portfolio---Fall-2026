@@ -2,8 +2,14 @@
 let sound1, luckySound, alertSound, lullabySound;
 
 let sounds = [];
-let buttons = [];
+let singleButtons = [];
+let mixButtons = [];
+
 let currentSound = null;
+let mixing = [false, false, false, false];
+
+let singleStatus;
+let mixStatus;
 
 function preload() {
   sound1 = loadSound("sound/sound1.mp3");
@@ -22,55 +28,132 @@ function setup() {
     lullabySound
   ];
 
-  // Main container
   let container = createDiv();
   container.style("margin", "60px 20px");
   container.style("color", "#2F4F4D");
 
-  // Title
+  // MAIN TITLE
   let title = createElement("h2", "Sound Playground");
   title.parent(container);
 
-  let description = createP("Click a button to play a sound");
-  description.parent(container);
+  // ==================================
+  // PART 1: SINGLE SOUND PLAYBACK
+  // ==================================
 
-  // Button container
-  let buttonContainer = createDiv();
-  buttonContainer.parent(container);
+  let singleTitle = createElement("h3", "Single Sound Playback");
+  singleTitle.parent(container);
 
-  buttonContainer.style("display", "flex");
-  buttonContainer.style("gap", "20px");
-  buttonContainer.style("flex-wrap", "wrap");
-  buttonContainer.style("margin-top", "30px");
+  let description1 = createP("Click a button to play one sound");
+  description1.parent(container);
 
-  // Create four buttons
+  let singleContainer = createDiv();
+  singleContainer.parent(container);
+  styleButtonContainer(singleContainer);
+
   for (let i = 0; i < 4; i++) {
     let btn = createButton(i + 1);
 
-    btn.parent(buttonContainer);
-    btn.size(70, 50);
+    btn.parent(singleContainer);
+    styleButton(btn);
 
-    btn.style("background-color", "#F5FFFA");
-    btn.style("color", "#2F4F4D");
-    btn.style("border", "2px solid #2F4F4D");
-    btn.style("font-size", "20px");
-    btn.style("cursor", "pointer");
+    btn.mousePressed(() => playSingle(i));
 
-    btn.mousePressed(() => playSound(i));
-
-    buttons.push(btn);
+    singleButtons.push(btn);
   }
 
-  // Sound status
-  statusText = createP("Stopped");
-  statusText.parent(container);
-  statusText.style("margin-top", "40px");
-  statusText.style("font-size", "18px");
+  singleStatus = createP("Stopped");
+  singleStatus.parent(container);
+  singleStatus.style("margin-top", "25px");
+
+  // ==================================
+  // PART 2: SOUND MIXING
+  // ==================================
+
+  let divider = createDiv();
+  divider.parent(container);
+  divider.style("border-top", "1px solid #C8D8D1");
+  divider.style("margin", "45px 0 30px");
+
+  let mixTitle = createElement("h2", "Sound Mixing");
+  mixTitle.parent(container);
+
+  let description2 = createP(
+    "Select multiple sounds to play together in a loop"
+  );
+  description2.parent(container);
+
+  let mixContainer = createDiv();
+  mixContainer.parent(container);
+  styleButtonContainer(mixContainer);
+
+  for (let i = 0; i < 4; i++) {
+    let btn = createButton(i + 1);
+
+    btn.parent(mixContainer);
+    styleButton(btn);
+
+    btn.mousePressed(() => toggleMix(i));
+
+    mixButtons.push(btn);
+  }
+
+  mixStatus = createP("No sounds selected");
+  mixStatus.parent(container);
+  mixStatus.style("margin-top", "25px");
+
+  // STOP ALL BUTTON
+  let stopAllButton = createButton("Stop All Sounds");
+  stopAllButton.parent(container);
+
+  styleButton(stopAllButton);
+  stopAllButton.style("width", "180px");
+  stopAllButton.style("font-size", "16px");
+  stopAllButton.style("margin-top", "20px");
+
+  stopAllButton.mousePressed(stopAll);
+
+  // Update status when single sounds finish
+  for (let i = 0; i < sounds.length; i++) {
+    sounds[i].onended(() => {
+      if (currentSound === sounds[i]) {
+        currentSound = null;
+        updateButtons();
+      }
+    });
+  }
+
+  updateButtons();
 }
 
-// Play / Stop sound
-function playSound(index) {
+// ==================================
+// BUTTON STYLING
+// ==================================
+
+function styleButtonContainer(container) {
+  container.style("display", "flex");
+  container.style("gap", "20px");
+  container.style("flex-wrap", "wrap");
+  container.style("margin-top", "25px");
+}
+
+function styleButton(btn) {
+  btn.size(70, 50);
+  btn.style("background-color", "#F5FFFA");
+  btn.style("color", "#2F4F4D");
+  btn.style("border", "2px solid #2F4F4D");
+  btn.style("font-size", "20px");
+  btn.style("cursor", "pointer");
+}
+
+// ==================================
+// SINGLE SOUND PLAYBACK
+// ==================================
+
+function playSingle(index) {
   let selectedSound = sounds[index];
+
+  // Stop all mixing sounds
+  stopMixing();
 
   if (currentSound === selectedSound) {
     selectedSound.stop();
@@ -80,29 +163,117 @@ function playSound(index) {
       currentSound.stop();
     }
 
+    selectedSound.setLoop(false);
     selectedSound.play();
+
     currentSound = selectedSound;
   }
 
   updateButtons();
 }
 
-// Update button appearance
+// ==================================
+// SOUND MIXING
+// ==================================
+
+function toggleMix(index) {
+
+  // Stop single sound
+  if (currentSound !== null) {
+    currentSound.stop();
+    currentSound = null;
+  }
+
+  let selectedSound = sounds[index];
+
+  if (mixing[index] == false) {
+
+    // Start looping selected sound
+    selectedSound.loop();
+    mixing[index] = true;
+
+  } else {
+
+    // Stop only this sound
+    selectedSound.stop();
+    mixing[index] = false;
+
+  }
+
+  updateButtons();
+}
+
+// ==================================
+// STOP MIXING
+// ==================================
+
+function stopMixing() {
+  for (let i = 0; i < sounds.length; i++) {
+    if (mixing[i]) {
+      sounds[i].stop();
+      mixing[i] = false;
+    }
+  }
+}
+
+// ==================================
+// STOP ALL
+// ==================================
+
+function stopAll() {
+  for (let i = 0; i < sounds.length; i++) {
+    sounds[i].stop();
+    mixing[i] = false;
+  }
+
+  currentSound = null;
+  updateButtons();
+}
+
+// ==================================
+// UPDATE BUTTON COLORS
+// ==================================
+
 function updateButtons() {
-  for (let i = 0; i < buttons.length; i++) {
-    if (sounds[i] === currentSound) {
-      buttons[i].style("background-color", "#2F4F4D");
-      buttons[i].style("color", "#FFFFFF");
+
+  // Single playback button colors
+  for (let i = 0; i < singleButtons.length; i++) {
+
+    if (currentSound === sounds[i]) {
+      singleButtons[i].style("background-color", "#2F4F4D");
+      singleButtons[i].style("color", "#FFFFFF");
     } else {
-      buttons[i].style("background-color", "#F5FFFA");
-      buttons[i].style("color", "#2F4F4D");
+      singleButtons[i].style("background-color", "#F5FFFA");
+      singleButtons[i].style("color", "#2F4F4D");
     }
   }
 
+  // Mixing button colors
+  for (let i = 0; i < mixButtons.length; i++) {
+
+    if (mixing[i]) {
+      mixButtons[i].style("background-color", "#2F4F4D");
+      mixButtons[i].style("color", "#FFFFFF");
+    } else {
+      mixButtons[i].style("background-color", "#F5FFFA");
+      mixButtons[i].style("color", "#2F4F4D");
+    }
+  }
+
+  // Single playback status
   if (currentSound !== null) {
     let index = sounds.indexOf(currentSound);
-    statusText.html("Playing Sound " + (index + 1));
+    singleStatus.html("Playing Sound " + (index + 1));
   } else {
-    statusText.html("Stopped");
+    singleStatus.html("Stopped");
+  }
+
+  // Mixing status
+  let count = mixing.filter(value => value).length;
+
+  if (count == 0) {
+    mixStatus.html("No sounds selected");
+  } else {
+    mixStatus.html(count + " sound(s) looping");
   }
 }
