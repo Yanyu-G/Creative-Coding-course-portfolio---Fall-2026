@@ -1,31 +1,188 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 7 — Sketch 1</title>
-  <style>html,body {margin:0; padding:0; overflow:hidden; background:rgb(255, 255, 255);} canvas {display:block;}</style>
-  <script src="https://cdn.jsdelivr.net/npm/p5@2.3.2/lib/p5.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/jdeboi/p5.mapper@main/dist/p5.mapper.min.js"></script>
- <a href = "../Week10/Week10.html"> Week 10 </a>
-  <script src="./classnote1.js"></script>
-</head>
-<body></body>
-</html>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10 Class Note</title>
 
-  <!-- p5.js -->
-  <script src="https://cdn.jsdelivr.net/npm/p5@2.3.2/lib/p5.js"></script>
+    <style>
+        body {
+            background-color: rgb(245, 255, 250);
+            color: rgb(47, 79, 77);
+            margin: 20px;
+        }
 
-  <!-- ml5.js -->
-  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+        h1, h2, h3, p {
+            color: rgb(47, 79, 77);
+        }
+
+        a {
+            color: rgb(92, 112, 108);
+            text-decoration: none;
+            border: 2px solid rgb(47, 79, 77);
+            padding: 10px 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        a:hover {
+            background-color: rgb(47, 79, 77);
+            color: #F5FFFA;
+        }
+
+        .note {
+            margin-bottom: 35px;
+        }
+
+        code {
+            color: rgb(47, 79, 77);
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
-  <script src="classnote1.js"></script>
+
+<a href="./Week10.html">Week 10</a>
+
+<h2>Week 10 Class Note</h2>
+<h3>Sound & Audio Synthesis</h3>
+
+<div class="note">
+    <h3>1. loadSound() - Loading Audio Files</h3>
+    <p>Loads an existing audio file into p5.js.</p>
+    <p>We can use sound files such as MP3 or WAV.</p>
+    <p><strong>preload()</strong> loads the sound before the program starts.</p>
+</div>
+
+<div class="note">
+    <h3>2. play() / stop() / loop() - Sound Playback</h3>
+    <p><code>play()</code> &rarr; Plays the sound.</p>
+    <p><code>stop()</code> &rarr; Stops the sound.</p>
+    <p><code>loop()</code> &rarr; Repeats the sound continuously.</p>
+    <p>Playing a sound multiple times may cause overlapping sounds.</p>
+</div>
+
+<div class="note">
+    <h3>3. mousePressed() - Mouse Interaction</h3>
+    <p>Runs every time the mouse button is pressed.</p>
+    <p>We can use mouse clicks to play, stop, or change a sound.</p>
+</div>
+
+<div class="note">
+    <h3>4. onOff - Sound Toggle</h3>
+    <p>A variable used to switch between two states.</p>
+    <p><strong>onOff = 0</strong> &rarr; Sound OFF</p>
+    <p><strong>onOff = 1</strong> &rarr; Sound ON</p>
+    <p>An if-else statement allows us to switch between these states.</p>
+</div>
+
+<div class="note">
+    <h3>5. rate() - Playback Speed</h3>
+    <p>Changes how fast an audio file plays.</p>
+    <p><code>rate(1)</code> &rarr; Normal speed</p>
+    <p><code>rate(2)</code> &rarr; Double speed</p>
+    <p><code>rate(0.5)</code> &rarr; Half speed</p>
+    <p>Changing playback speed also changes the pitch.</p>
+    <p>Negative rates may not work in newer library versions.</p>
+</div>
+
+<div class="note">
+    <h3>6. map() - Mouse-Controlled Sound</h3>
+    <p>Converts a value from one range into another.</p>
+    <p><strong>mouseX</strong> &rarr; Controls Sound 1 playback rate.</p>
+    <p><strong>mouseY</strong> &rarr; Controls Sound 2 playback rate.</p>
+    <p>We can control multiple sounds by moving the mouse.</p>
+</div>
+
+<div class="note">
+    <h3>7. Reverb - Sound Effects</h3>
+    <p>Reverb simulates sound reflections inside a physical space.</p>
+    <p>For example, sounds in a subway station or a large hall.</p>
+    <p><strong>Dry Sound</strong> &rarr; Original sound without effects.</p>
+    <p><strong>Wet Sound</strong> &rarr; Sound processed with effects.</p>
+    <p>Reverb makes sounds feel more spacious and atmospheric.</p>
+</div>
+
+<div class="note">
+    <h3>8. connect() / disconnect() - Audio Routing</h3>
+    <p>Controls how audio signals travel through sound effects.</p>
+    <p><code>disconnect()</code> &rarr; Removes an audio connection.</p>
+    <p><code>connect()</code> &rarr; Connects audio to an effect.</p>
+    <p>Sound can pass through reverb, filters, or delay.</p>
+    <p><em>Class Note: Reverb had compatibility issues during class.</em></p>
+</div>
+
+<div class="note">
+    <h3>9. Audio Synthesis - Creating Sound</h3>
+    <p>Generates sound electronically instead of playing an audio file.</p>
+    <p>We can create sounds by controlling waveforms.</p>
+    <p>Frequency, amplitude, and waveform affect how a sound is heard.</p>
+</div>
+
+<div class="note">
+    <h3>10. Oscillator - Generating Sound Waves</h3>
+    <p>An oscillator generates a repeating waveform.</p>
+    <p>Different waveforms create different sound qualities.</p>
+    <p><strong>Sine Wave</strong> &rarr; Smooth and pure sound.</p>
+    <p><strong>Square Wave</strong> &rarr; Sharp electronic sound.</p>
+    <p><strong>Triangle Wave</strong> &rarr; Soft sound.</p>
+    <p><strong>Sawtooth Wave</strong> &rarr; Bright and rich sound.</p>
+</div>
+
+<div class="note">
+    <h3>11. Frequency - Sound Pitch</h3>
+    <p>Frequency is the number of wave cycles per second.</p>
+    <p>It is measured in Hertz (Hz).</p>
+    <p><strong>Higher Frequency</strong> &rarr; Higher pitch.</p>
+    <p><strong>Lower Frequency</strong> &rarr; Lower pitch.</p>
+    <p>Fast repeating pulses can be heard as a continuous tone.</p>
+</div>
+
+<div class="note">
+    <h3>12. Amplitude - Sound Volume</h3>
+    <p>Amplitude describes the strength of a sound wave.</p>
+    <p><strong>Small Amplitude</strong> &rarr; Quieter sound.</p>
+    <p><strong>Large Amplitude</strong> &rarr; Louder sound.</p>
+    <p><strong>Amplitude = 0</strong> &rarr; Silence.</p>
+</div>
+
+<div class="note">
+    <h3>13. start() / stop() - Oscillator Control</h3>
+    <p><code>start()</code> &rarr; Starts the oscillator.</p>
+    <p><code>stop()</code> &rarr; Stops the oscillator.</p>
+    <p>Starting and stopping suddenly may create clicking sounds.</p>
+</div>
+
+<div class="note">
+    <h3>14. amp() - Amplitude Control</h3>
+    <p>Controls the amplitude of an oscillator.</p>
+    <p><code>amp(0)</code> &rarr; Silent.</p>
+    <p><code>amp(1)</code> &rarr; High amplitude.</p>
+    <p>We can keep an oscillator running and change its amplitude.</p>
+    <p>Gradual changes create smoother sound transitions.</p>
+</div>
+
+<div class="note">
+    <h3>15. keyPressed() - Keyboard Interaction</h3>
+    <p>Runs when a keyboard key is pressed.</p>
+    <p>We can press a key to start an oscillator.</p>
+    <p>Browsers usually require user interaction before playing audio.</p>
+</div>
+
+<div class="note">
+    <h3>16. console.log() - Debugging</h3>
+    <p>Displays information in the browser console.</p>
+    <p>Helps us check if a function or if statement is working.</p>
+    <p>Useful when a sound does not play as expected.</p>
+</div>
+
+<h3>Key Takeaways</h3>
+
+<p><strong>Audio Playback</strong> &rarr; Plays existing sound files.</p>
+<p><strong>Audio Synthesis</strong> &rarr; Creates new sounds using oscillators.</p>
+<p>Mouse and keyboard interactions can control playback speed, frequency, and amplitude.</p>
+
 </body>
 </html>
